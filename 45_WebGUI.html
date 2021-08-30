@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Javascript</title>
+	<link rel="stylesheet" href="https://gymburgdorf-ef23.github.io/helpers/basicstyle.css"></link>
+	<style>
+		input, button, .output {padding: 0.4em; border-radius: 5px; font-family: monospace; margin: 0.5em 0; font-size: 1.4em;}
+		input {background-color: #bbe; }
+		.output {background-color: #ada;}
+	</style>
+	<script src="43_functions.js"></script>
+</head>
+<body>
+	<h1>Javascript - DOM Manipulation</h1>
+
+	<div class="hypotenuse">
+		<h2>Get Hypotenuse</h2>
+		<div>
+			<input class="a" placeholder="a" type="number">
+			<input class="b" placeholder="b" type="number">
+			<button>Get Hypotenuse</button>
+			<div class="output">&nbsp;</div>
+		</div>
+	</div>
+
+
+	<script>
+
+		const hypotenuseButton = document.querySelector(".hypotenuse button")
+		const hypotenuseOutput = document.querySelector(".hypotenuse .output")
+
+		hypotenuseButton.addEventListener("click", showHypotenuse)
+
+		function showHypotenuse() {
+			const a = Number(document.querySelector(".hypotenuse input.a").value)
+			const b = Number(document.querySelector(".hypotenuse input.b").value)
+			const c = getHypotenuse(a, b)
+			hypotenuseOutput.textContent = c
+		}
+
+
+	</script>
+</body>
+</html>
