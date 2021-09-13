@@ -1,0 +1,54 @@
+body {
+    background: rgb(36, 41, 46);
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+
+}
+
+#output-text {
+    color: rgb(92, 138, 207);
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgb(0, 0, 0, .2);
+    font-size: 20px;
+    width: 90%;
+    height: 80%;
+    padding: 2%;
+    border-radius: 7px;
+    margin: auto;
+}
+
+#input-wrapper {
+    color: rgb(16, 134, 128);
+    font-weight: bold;
+    background-color: transparent;
+    margin: auto;
+    margin-top: 30px;
+    width: 90%;
+}
+
+#in, #rec {
+    color: rgb(65, 107, 145);
+    padding: 5px;
+    background-color: rgb(0, 0, 0, .3);
+    border: none;
+    box-shadow: none;
+    outline: none;
+    border-radius: 10px;
+    font-size: 20px;
+    width: 95%;
+}
+
+.wrap {
+    position: relative;
+    display: inline-block;
+}
+
+#rec {
+    color:rgb(100, 140, 160, .4);
+    pointer-events: none;
+    background-color: transparent;
+    position: absolute;
+    left: 0;
+}
+
