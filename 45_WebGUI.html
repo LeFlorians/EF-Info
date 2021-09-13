@@ -23,23 +23,54 @@
 			<div class="output">&nbsp;</div>
 		</div>
 	</div>
-
-
+	
 	<script>
 
 		const hypotenuseButton = document.querySelector(".hypotenuse button")
 		const hypotenuseOutput = document.querySelector(".hypotenuse .output")
-
+		
 		hypotenuseButton.addEventListener("click", showHypotenuse)
-
+		
 		function showHypotenuse() {
 			const a = Number(document.querySelector(".hypotenuse input.a").value)
 			const b = Number(document.querySelector(".hypotenuse input.b").value)
 			const c = getHypotenuse(a, b)
 			hypotenuseOutput.textContent = c
 		}
-
-
+		
+		
+		
 	</script>
+
+	<div class="median">
+		<h2>Get Median of 3 Numbers</h2>
+		<div>
+			<input class="a" placeholder="a" type="number">
+			<input class="b" placeholder="b" type="number">
+			<input class="c" placeholder="c" type="number">
+			<button>Get Median</button>
+			<div class="output">&nbsp;</div>
+		</div>
+	</div>
+
+	<script>
+
+		const medianButton = document.querySelector(".median button")
+		const medianOutput = document.querySelector(".median .output")
+		
+		medianButton.addEventListener("click", showHypotenuse)
+		
+		function showHypotenuse() {
+			const a = Number(document.querySelector(".median input.a").value)
+			const b = Number(document.querySelector(".median input.b").value)
+			const c = Number(document.querySelector(".median input.c").value)
+			medianOutput.textContent = medianOf3(a, b, c);
+		}
+		
+		
+		
+		</script>
+
+
 </body>
 </html>
