@@ -1,5 +1,4 @@
-import perform from "./actor.js";
-
+import { perform, init } from "./actor.js";
 const inputField = document.getElementById("in");
 const recommendationField = document.getElementById("rec");
 const outputBox = document.getElementById("output-text");
@@ -37,20 +36,38 @@ function ask(question, callback){
     question();
 }
 
+
+// Not to write multiple messages at the same time
+const outputQueue = [];
+
 function loadMessage(text){
 
-    // Create a temporary loading element
-    var temp = document.createElement("img");
-    temp.src = "https://mir-s3-cdn-cf.behance.net/project_modules/disp/cd514331234507.564a1d2324e4e.gif";
-    temp.className = "loading";
-    outputBox.appendChild(temp);
+    outputQueue.push(() => {
+        // Create a temporary loading element
+        var temp = document.createElement("img");
+        temp.src = "https://mir-s3-cdn-cf.behance.net/project_modules/disp/cd514331234507.564a1d2324e4e.gif";
+        temp.className = "loading";
+        outputBox.appendChild(temp);
 
-    // Replace temp with actual message
-    setTimeout(() => {
-        temp.remove();
-        outputBox.innerHTML += text;
+        // Replace temp with actual message
+        setTimeout(() => {
+            temp.remove();
+            outputBox.innerHTML += text;
 
-    }, Math.random() * 500 + 700);
+        }, Math.random() * 500 + 700);
+    });
+
+    // TODO: fix concurrence
+    // start writing messages
+    var load = () => {
+        var action = outputQueue.pop();
+        if(action){
+            action();
+            load();
+        }
+    };
+    load();
+
 
 }
 
@@ -91,6 +108,9 @@ inputField.addEventListener("keypress", e => {
         inputField.value = "";
     }
 });
+
+// Ask actor to start the game
+init();
 
 // Export the 3 methods to provide user interaction for actor.js
 export {write, show, ask};
