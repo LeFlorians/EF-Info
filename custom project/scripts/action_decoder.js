@@ -11,8 +11,14 @@ const ignored_words = [
 // Step 2: map words to aliases
 const aliases = {
     verb: {
-        "move": ["walk", "run", "go", "sprint"],
+        "move": ["walk", "run", "go", "sprint", "move"],
+    },
 
+    object: {
+    },
+
+    direction: {
+        "impossible": ["west", "south", "east", "north", "backwards", "backward", "left", "right", "back"],
     },
     
 };
@@ -34,7 +40,7 @@ function decode(command){
         // TODO: This could be improved with hash-map like datastructure
         for(var i in aliases)
             for(var j in aliases[i])
-                if(aliases[i][j].includes(word))
+                if(aliases[i][j].includes(word.toLowerCase()))
                     info[i] = j;
 
     });

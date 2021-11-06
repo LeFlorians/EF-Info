@@ -1,18 +1,37 @@
+:root {
+    --playerText: rgb(223, 145, 0);
+    --responseText: rgb(166, 122, 192);
+
+    --inputBackground: rgb(0, 0, 0, .3);
+    --outputBackground: rgb(26, 26, 26);
+
+    --messageBackground: rgba(41, 42, 48, 0.726);
+}
+
 body {
-    background: rgb(36, 41, 46);
+    background: rgb(32, 31, 33);
     width: 100vw;
     height: 100vh;
     margin: 0;
+    cursor: default;
 
 }
 
-#output-wrapper {
+#container {
+    position:absolute;
+    margin-top: 10vh;
+    width: 100vw;
+    height: 90vh;
+}
+
+#wrapper {
     position: relative;
     width: 50%;
     height: 80%;
     margin: auto;
 
     overflow: hidden;
+    scrollbar-width: 0;
 }
 
 ::-webkit-scrollbar {
@@ -22,21 +41,29 @@ body {
 
 #output-text {
     position: absolute;
-    color: rgb(92, 138, 207);
+    color: var(--playerText);
     font-family: Arial, Helvetica, sans-serif;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: var(--outputBackground);
     font-size: 20px;
-    width: 100%;
-    height: 95%;
+
+    border: solid;
+    border-width: 5px;
+    border-color: var(--outputBackground);
     
     display: flex;
     align-items: flex-start;
     flex-direction: column;
     
     border-radius: 15px;
+    scroll-behavior: smooth;
 
-    overflow-y: scroll;
+    scrollbar-width: 0;
+
+    width: calc(100% - 10px);
+    height: 85%;
+
     overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 .loading {
@@ -46,7 +73,7 @@ body {
 #output-text p, .loading {
     padding: 10px;
     border-radius: 5px;
-    background-color: rgba(56, 58, 66, 0.726);
+    background-color: var(--messageBackground);
 }
 
 .query {
@@ -55,7 +82,7 @@ body {
 }
 
 .response {
-    color: rgb(165, 92, 207);
+    color: var(--responseText);
 
 }
 
@@ -69,37 +96,23 @@ body {
     margin: 10px;
 }
 
-#input-wrapper {
-    font-size: 22px;
-    color: rgb(16, 134, 128);
-    font-weight: bolder;
-    background-color: transparent;
-    margin: auto;
-    margin-top: 30px;
-    width: 50%;
-}
+#in {
+    position: absolute;
+    bottom: 0;
 
-#in, #rec {
-    color: rgb(65, 107, 145);
-    padding: 5px;
-    background-color: rgb(0, 0, 0, .3);
+    color: var(--playerText);
+    background-color: var(--inputBackground);
+    
     border: none;
     box-shadow: none;
     outline: none;
+
+    width: 96%;
+    height: 5%;
+
     border-radius: 10px;
+    padding: 2%;
+
     font-size: 20px;
-    width: 95%;
 }
 
-.wrap {
-    position: relative;
-    display: inline-block;
-}
-
-#rec {
-    color:rgb(100, 140, 160, .4);
-    pointer-events: none;
-    background-color: transparent;
-    position: absolute;
-    left: 0;
-}
