@@ -47,7 +47,7 @@ function respond(info){
         };
         if(canMove){
             // Change situation
-            situation = situations[Math.floor(Math.random() * situations.length)];
+            situation = situations[position % situations.length];
 
             position++;
 
@@ -63,7 +63,7 @@ function respond(info){
                     "As your flashlight flickers, you move on, one step.",
                     "Deep echoes reflect your movement. Your heart beats at normal pace.",
                     "This walk is going on forever now. You must be determined as you take one more step.",
-                    "Nothing seems to hold you back as you sneak foreward.",
+                    "Nothing seems to hold you back as you sneak forward.",
                     "You tell yourself that you can make it. You move on. One step.",
                     "You don't remember how you landed here. But it doesn't matter. You go on.",
                     "No sunlight is shining through the gap above you as you take one more step.",
@@ -110,6 +110,45 @@ function respond(info){
         }
     }
 
+    // Global write command
+    if(info.verb == "write"){
+        if(info.object == "book"){
+            return () => {    
+                var page = "page " + (state.bookPage + 1);
+                switch(state.bookPage + 1){
+                    case 1: page = "first"; break;
+                    case 2: page = "second"; break;
+                    case 3: page = "third"; break;
+                    case 4: page = "fourth"; break;
+                    case 5: page = "fifth"; break;
+                }
+                if(state.bookPage < 5)
+                    page = "the " + page + " page";
+                
+                ask(() => {
+                    write("Please type the text you want to write into the book.")
+                }, (text) => {
+                    text = text.trim();
+
+                    if(text && text != ""){
+                        state.bookText[state.bookPage] += text;
+                        write("You write '"+text+"' onto " + page + " of the notebook.");
+                    } else {
+                        write("You decide not to write anything.");
+                    }
+                    return true;
+                });
+    
+    
+            };
+        }
+        if(!info.object){
+            return () => {
+                write("Please also specify what you would want to write to.");
+            }
+        }
+    }
+
     // If nothing was found to do, look at the current situation.
     if(situation){
         const ret = situation[1](info);
@@ -136,18 +175,19 @@ function respond(info){
 };
 
 // Your inventory
-const inventory = {
-    coins: 0,
-};
+const inventory = {};
 
 // Define an active state for situations that require it
-var active = false;
+const state = {
+    coinAvailable: true,
+    bookAvailable: true,
+    bookPage: -1,
+    bookText: [],
+}
 
 // Define situations
 const situations = [
-    [
-
-        // Situation 1: Coin
+    [ // Situation 1: Coin
         () => { 
             write([
                 "There is something shiny in front of you.",
@@ -155,12 +195,11 @@ const situations = [
                 "A coin lies on the floor in front of you.",
                 "Something shiny lies on the gray concrete floor.",
             ]);
-            active = true;
         },
         (info) => {
             if(info.verb == "take"){
-                if(active){
-                    active = false;
+                if(state.coinAvailable){
+                    state.coinAvailable = false;
                     inventory.coins++;
                     return () => {
                         write([
@@ -173,7 +212,7 @@ const situations = [
                     return () => { write("There is nothing there to take."); } 
                 }
             } else if(info.verb == "look"){
-                if(active){
+                if(state.coinAvailable){
                     return () => { write("You take a closer look. It seems to be a golden coin.") };
                 } else {
                     return () => { write("There is nothing there to see."); } 
@@ -182,33 +221,72 @@ const situations = [
         },
     ],
 
+    [ // Situation 2: Notebook
+        () => { 
+            write([
+                "A book with a leather cover lies in front of you.",
+                "Your flashlight reveals a book lying next to you on the coldish floor.",
+                "Something dusty lies on the gray concrete floor.",
+            ]);
+        },
+        (info) => {
+            if(info.verb == "take"){
+                if(state.bookAvailable){
+                    state.bookAvailable = false;
+                    state.bookPage = 0;
+                    inventory.notebooks++;
+                    return () => {
+                        write([
+                            "You take the two items. A notebook and a pen. You put them into your bag.",
+                            "You take the notebook. With it the pen that was lying next to it. In the bag it goes.",
+                            "You pick up the things on the floor. The notebook is full of dust and the pen is rusty. You take them with you.",
+                        ]);
+                    }
+                } else {
+                    return () => { write("There is nothing there to take."); } 
+                }
+            } else if(info.verb == "look"){
+                if(state.bookAvailable){
+                    return () => { write("You take a closer look. It seems to be a notebook and a pen.") };
+                } else {
+                    return () => { write("There is nothing there to see."); } 
+                }
+            }
+        },
+    ],
+
+
 ];
 
 // This defines what happens at the start of the game
 function init(){
     ask(() => {
-         write([
-            "Please tell me your name.", 
-            "Hey. What's your name?",
-            "Hello. Please tell me what you want to be called.",
-            "Hey. Tell me your name, please.",
-        ]); 
+            write([
+                "Please tell me your name.", 
+                "Hey. What's your name?",
+                "Hello. Please tell me what you want to be called.",
+                "Hey. Tell me your name, please.",
+            ]); 
         }, (name) => {
-        name = name.charAt(0).toUpperCase() + name.slice(1);
-        userName = name;
-        write([
-            "Welcome, " + name + ".",
-            "Greetings, " + name + ".",
-            "Hello " + name + ".",
-        ]);
+            name = name.charAt(0).toUpperCase() + name.slice(1);
+            userName = name;
 
-        write([
-            "You are in a narrow corridor. You may move ahead.",
-            "You are pressed against two walls. Try pushing yourself ahead.",
-            "Your flashlight enlightens your way through an enclosed corridor.",
-        ], "pink");
-        return true;
-    });
+            // TODO: shuffle situations
+
+            write([
+                "Welcome, " + name + ".",
+                "Greetings, " + name + ".",
+                "Hello " + name + ".",
+            ]);
+
+            write([
+                "You are in a narrow corridor. You may move ahead.",
+                "You are pressed against two walls. Try pushing yourself ahead.",
+                "Your flashlight enlightens your way through an enclosed corridor.",
+            ], "pink");
+            return true;
+        }
+    );
 
 }
 
