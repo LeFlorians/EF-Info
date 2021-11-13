@@ -17,10 +17,16 @@ const aliases = {
         "move": ["walk", "run", "go", "sprint", "move"],
         "look": ["look", "gaze", "stare", "peek", "examine", "inspect", "view", "observe"],
         "take": ["pick", "take", "steal"],
+        "put": ["put", "place"],
+        "write": ["write"],
+        "erase": ["delete", "erase"], // TODO: implement erase and read
+        "read": ["read"],
     },
 
     object: {
         "bag": ["purse", "bag", "backpack"],
+        "page": ["page", "paper"],
+        "book": ["notebook", "book"],
     },
 
     direction: {
@@ -31,13 +37,14 @@ const aliases = {
 
 // Decodes a simple command into useful information
 function decode(command){
+    var cmd = command;
 
     // Filter symbols
     ignored_symbols.forEach(symbol => {
-        command = command.replaceAll(symbol, "");
+        cmd = cmd.replaceAll(symbol, "");
     });
 
-    var words = command.split(" ");
+    var words = cmd.split(" ");
 
     // Filter words
     words.filter(word => {
@@ -56,6 +63,8 @@ function decode(command){
                     info[i] = j;
 
     });
+
+    info.command = command;
 
     return info;
 }
