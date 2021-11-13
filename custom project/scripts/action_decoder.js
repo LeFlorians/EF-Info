@@ -3,18 +3,24 @@
 // VO
 // VO with O
 
-// Step 1: filter words
+// Step 1: Filter symbols and words
 const ignored_words = [
-    "the", "of", "on", "with", "that"
+    "the", "of", "on", "with", "that",
+];
+const ignored_symbols = [
+    ".", ",", "?", "!",
 ];
 
 // Step 2: map words to aliases
 const aliases = {
     verb: {
         "move": ["walk", "run", "go", "sprint", "move"],
+        "look": ["look", "gaze", "stare", "peek", "examine", "inspect", "view", "observe"],
+        "take": ["pick", "take", "steal"],
     },
 
     object: {
+        "bag": ["purse", "bag", "backpack"],
     },
 
     direction: {
@@ -25,9 +31,15 @@ const aliases = {
 
 // Decodes a simple command into useful information
 function decode(command){
+
+    // Filter symbols
+    ignored_symbols.forEach(symbol => {
+        command = command.replaceAll(symbol, "");
+    });
+
     var words = command.split(" ");
 
-    // filter words
+    // Filter words
     words.filter(word => {
         return !ignored_words.includes(word);
     });

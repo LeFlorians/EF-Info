@@ -76,7 +76,7 @@ function loadMessage(text){
 }
 
 function _load() {
-    var action = _outputQueue.pop();
+    var action = _outputQueue.shift();
     if(action){
         _loading = true;
         action();
@@ -99,18 +99,7 @@ function submit(text) {
         }
     } else {
         // Execute the response function
-        const res = perform(text);
-
-        if(res) {
-            res();
-        } else {
-            // Provide default answer
-            write([
-                "Your demands seem unclear.", 
-                "Say that again, but slowly.", 
-                "You may have to rephrase that."
-            ]);
-        }
+        perform(text)();
     }
 }
 
