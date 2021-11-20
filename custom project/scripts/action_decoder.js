@@ -21,18 +21,33 @@ const aliases = {
         "write": ["write"],
         "erase": ["delete", "erase"], // TODO: implement erase and read
         "read": ["read"],
+        "buy": ["purchase", "buy", "trade"],
+        "save": ["save"],
+        "make": ["make", "create"],
+        "load": ["load"],
+        "continue": ["continue", "resume"],
+        "give": ["give"],
     },
 
     object: {
-        "bag": ["purse", "bag", "backpack"],
+        "bag": ["purse", "bag", "backpack", "inventory"],
         "page": ["page", "paper"],
         "book": ["notebook", "book"],
+        "coin": ["coin"],
+        "pen": ["marker", "pen", "pencil"],
+        "savestate": ["savefile", "savestate"],
+        "help": ["help", "advice", "aid"],
     },
 
     direction: {
         "impossible": ["west", "south", "east", "north", "backwards", "backward", "left", "right", "back"],
     },
     
+    answer: {
+        "yes": ["yes", "yep", "yeah", "sure", "y", "indeed"],
+        "no": ["no", "nope", "nah", "n"],
+    },
+
 };
 
 // Decodes a simple command into useful information

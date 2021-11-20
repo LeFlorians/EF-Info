@@ -37,7 +37,8 @@ function ask(question, callback){
     askCallback = callback;
 
     // ask question
-    question();
+    if(question != null)
+        question();
 }
 
 
@@ -57,7 +58,12 @@ function loadMessage(text){
         // Replace temp with actual message
         setTimeout(() => {
             temp.remove();
-            outputBox.innerHTML += text;
+
+            var textElement = document.createElement("template");
+            textElement.innerHTML = text;
+            outputBox.appendChild(textElement.content.firstChild);
+
+            //outputBox.innerHTML += text;
 
             _loading = false;
             _load();
@@ -87,7 +93,14 @@ function _load() {
 
 function submit(text) {
     // Append message from self
-    outputBox.innerHTML += "<p class=\"query\">" + text + "</p>";
+    var textElement = document.createElement("template");
+    textElement.innerHTML = "<p class=\"query\">" + text + "</p>";
+    if(outputBox.lastChild && outputBox.lastChild.className == "loading"){
+        outputBox.insertBefore(textElement.content.firstChild, outputBox.lastChild);
+    } else {
+        outputBox.appendChild(textElement.content.firstChild);
+    }
+
     new Audio("res/send_sound.mp3").play();
 
     autoscroll();
@@ -123,4 +136,4 @@ function autoscroll() {
 init();
 
 // Export the 3 methods to provide user interaction for actor.js
-export {write, show, ask};
+export {write, show, ask, autoscroll};
