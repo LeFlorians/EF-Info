@@ -162,24 +162,17 @@ function respond(info){
                 ])
             }
 
-            return () => {    
-                const page = state.bookPage + 1;
-                var pageName = indexToWord(page);
-
-                if(pageName.endsWith(".")){
-                    pageName = "the " + pageName + " page";
-                } else {
-                    pageName = "page " + pageName;
-                }
-                
+            return () => {                    
                 ask(() => {
                     write("Please type the text you want to write into the book.")
                 }, (text) => {
                     text = text.trim();
 
                     if(text && text != ""){
-                        state.bookText[state.bookPage] += text;
-                        write("You write '"+text+"' onto " + pageName + " of the notebook.");
+                        state.bookPage = state.bookText.length;
+
+                        state.bookText[state.bookPage] = text;
+                        write("You write '"+text+"' onto the next free page of the notebook.");
                     } else {
                         write("You decide not to write anything.");
                     }
@@ -193,6 +186,54 @@ function respond(info){
         return () => {
             write("Please specify something you want to write onto.");
         }
+    }
+
+    // Global read command
+    if(info.verb == "read"){
+
+        if(info.object == "book" && state.inventory.notebooks >= 1){
+            const page = state.bookPage + 1;
+            var pageName = indexToWord(page);
+
+            if(pageName.endsWith(".")){
+                pageName = "the " + pageName + " page";
+            } else {
+                pageName = "page " + pageName;
+            }
+            const text = state.bookText[state.bookPage];
+            if(!text || text == ""){
+                return () => {
+                    write([
+                        "Nothing is written on " + pageName + ".",
+                        "There is nothing to read on " + pageName + ".",
+                    ]);
+                };
+            } else {
+                return () => {
+                    write([
+                        "You read the text on " + pageName + " of the notebook.",
+                        "You glance over the text on " + pageName + " of your notebook.",
+                    ]);
+                    write(text, "darkgray");
+                };
+            }
+        }
+
+
+        return () => {
+            write("Please also specify what you would want to read from.");
+        };
+    }
+
+    // Global erase command
+    if(info.verb == "erase"){
+        return () => {
+            write([
+                "Don't forget. Overcome.",
+                "It's useless.",
+                "Everything here is written down for eternity.",
+            ]);
+        };
     }
 
     // If nothing was found to do, look at the current situation.
@@ -260,12 +301,13 @@ var state = {
 const situations = [
     { // Situation 1: Coin
         init: () => { 
-            write([
-                "There is something shiny in front of you.",
-                "Something golden lies in front of you.",
-                "A coin lies on the floor in front of you.",
-                "Something shiny lies on the gray concrete floor.",
-            ]);
+            if(state.coinAvailable)
+                write([
+                    "There is something shiny in front of you.",
+                    "Something golden lies in front of you.",
+                    "A coin lies on the floor in front of you.",
+                    "Something shiny lies on the gray concrete floor.",
+                ]);
         },
         
         decide: (info) => {
@@ -295,11 +337,12 @@ const situations = [
 
     { // Situation 2: Notebook
         init: () => { 
-            write([
-                "A book with a leather cover lies in front of you.",
-                "Your flashlight reveals a book lying next to you on the coldish floor.",
-                "Something dusty lies on the gray concrete floor.",
-            ]);
+            if(state.bookAvailable)
+                write([
+                    "A book with a leather cover lies in front of you.",
+                    "Your flashlight reveals a book lying next to you on the coldish floor.",
+                    "Something dusty lies on the gray concrete floor.",
+                ]);
         },
         decide: (info) => {
             if(info.verb == "take"){
@@ -507,7 +550,7 @@ window.addEventListener("drop", (e) => {
     if(file) {
         file.text().then((text) => {
             const savestate = JSON.parse(text);
-            console.log(savestate);
+            console.log(savestate.state);
             outputBox.innerHTML = savestate.past;
             state = savestate.state;
 

@@ -15,11 +15,11 @@ const ignored_symbols = [
 const aliases = {
     verb: {
         "move": ["walk", "run", "go", "sprint", "move"],
-        "look": ["look", "gaze", "stare", "peek", "examine", "inspect", "view", "observe"],
-        "take": ["pick", "take", "steal"],
+        "look": ["look", "see", "gaze", "stare", "peek", "examine", "inspect", "view", "observe"],
+        "take": ["pick", "take", "steal", "keep"],
         "put": ["put", "place"],
         "write": ["write"],
-        "erase": ["delete", "erase"], // TODO: implement erase and read
+        "erase": ["delete", "erase"], // TODO: implement page switching
         "read": ["read"],
         "buy": ["purchase", "buy", "trade"],
         "save": ["save"],
@@ -27,6 +27,7 @@ const aliases = {
         "load": ["load"],
         "continue": ["continue", "resume"],
         "give": ["give"],
+        "clean": ["clean"], // TODO: make cleaning book available
     },
 
     object: {
