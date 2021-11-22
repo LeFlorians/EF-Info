@@ -29,6 +29,7 @@ const aliases = {
         "give": ["give"],
         "clean": ["clean"], // TODO: make cleaning book available
         "repeat": ["repeat"],
+        "turn": ["turn", "rotate"],
     },
 
     object: {

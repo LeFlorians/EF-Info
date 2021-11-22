@@ -86,7 +86,8 @@ function respond(info){
     }
 
     // Book page change
-    if(info.bookAlias == "changePage" && state.inventory.notebooks >= 1){
+    if((info.bookAlias == "changePage" || info.verb == "turn") 
+        && (info.object == "page" || info.object == "book") && state.inventory.notebooks >= 1){
 
         if(info.numbers.length >= 1){
 
