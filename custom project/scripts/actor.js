@@ -21,15 +21,43 @@ function perform(command){
 
 }
 
+var lastInfo = null;
+
 // This defines -the game-
 function respond(info){
     console.log(info);
 
     // - Here are global commands -
 
+    // Global repeat command
+    if(info.verb == "repeat"){
+        if(lastInfo == null)
+            return () => {
+                write([
+                    "You haven't done anything yet.",
+                ])
+            }
+        info = lastInfo;
+    }
+    lastInfo = info;
+
     // Global help command
     if(info.object == "help" && (!info.verb || info.verb == "give")){
-        // TODO: implement help command
+        return () => {
+            write([
+                `
+                What you can do:<br>
+                - Write very simple sentences<br>
+                - Don't be afraid to try out things<br>
+                - Repeat commands with 'repeat'<br>
+                <br>
+                What you can't do:<br>
+                - Negate sentences (don't)<br>
+                - Chain sentences (and/or)<br>
+                - Undo previous actions<br>
+                ` 
+            ]);
+        }   
     }
 
     // Global save command
@@ -57,22 +85,62 @@ function respond(info){
         };
     }
 
+    // Book page change
+    if(info.bookAlias == "changePage" && state.inventory.notebooks >= 1){
+
+        if(info.numbers.length >= 1){
+
+            const destPage = info.numbers[0];
+            if(destPage >= 1 && destPage <= state.bookText.length){
+                state.bookPage = destPage -1;
+                return () => {
+                    write([
+                        "You switched to page " + destPage + ".",
+                        "You changed page to page " + destPage + ".",
+                    ]);
+                };
+            }
+
+            return () => {
+                write([
+                    "The book only has " + state.bookText.length + " pages with text on them.",
+                    "Please choose one of the " + state.bookText.length + " readable pages.",
+                ]);
+            }
+
+        }
+
+        return () => {
+            write([
+                "Please also specify a page number to switch to.",
+                "Please also tell me what page you want to go to.",
+            ]);
+        };
+
+    }
     
 
     // Global move command
     if(info.verb == "move"){
 
-        if(info.direction == "impossible")
-        return () => {
-            write([
-                "You cannot go that way, " + state.userName + ".",
-                "Your only choice is to move forward.",
-                "You are unable to turn around.",
-                "You know there is no going back.",
-                "Really. Don't go back now.",
-                "Going back is not an option, " + state.userName + ".",
-            ], "pink");
-        };
+        if(info.direction == "other")
+            return () => {
+                write([
+                    "You cannot go that way, " + state.userName + ".",
+                    "Your only choice is to move forward.",
+                ], "pink");
+            };
+        if(info.direction == "back")
+            return () => {
+                write([
+                    "You are unable to turn around.",
+                    "You know there is no going back.",
+                    "Really. Don't go back now.",
+                    "Going back is not an option, " + state.userName + ".",
+                ], "pink");
+            };
+
+
         if(state.canMove){
             // Change situation
             state.position++;
@@ -162,24 +230,22 @@ function respond(info){
                 ])
             }
 
+            ask((text) => {
+                text = text.trim();
+
+                if(text && text != ""){
+                    state.bookPage = state.bookText.length;
+
+                    state.bookText[state.bookPage] = text;
+                    write("You write '"+text+"' onto the next free page of the notebook.");
+                } else {
+                    write("You decide not to write anything.");
+                }
+                return true;
+            });
+
             return () => {                    
-                ask(() => {
-                    write("Please type the text you want to write into the book.")
-                }, (text) => {
-                    text = text.trim();
-
-                    if(text && text != ""){
-                        state.bookPage = state.bookText.length;
-
-                        state.bookText[state.bookPage] = text;
-                        write("You write '"+text+"' onto the next free page of the notebook.");
-                    } else {
-                        write("You decide not to write anything.");
-                    }
-                    return true;
-                });
-    
-    
+                write("Please type the text you want to write into the book.");
             };
         }
 
@@ -227,13 +293,14 @@ function respond(info){
 
     // Global erase command
     if(info.verb == "erase"){
-        return () => {
-            write([
-                "Don't forget. Overcome.",
-                "It's useless.",
-                "Everything here is written down for eternity.",
-            ]);
-        };
+        if(info.object == "book" && state.inventory.notebooks >= 1)
+            return () => {
+                write([
+                    "Don't forget. Overcome.",
+                    "It's useless.",
+                    "Everything here is written down for eternity.",
+                ]);
+            };
     }
 
     // If nothing was found to do, look at the current situation.
@@ -432,28 +499,27 @@ const situations = [
                                 }
                             }
 
+                            ask((answer) => {
+                                const answerInfo = decode(answer);
+                                if(answerInfo.answer == "yes"){
+                                    write("You decide to buy one " + offer.item + " for " + price + ".");
+                                    state.inventory[offer.invName]++;
+                                    offer.stock--;
+                                    state.inventory.coins -= offer.price;
+                                } else if(answerInfo.answer == "no") {
+                                    write("You decide not to buy anything.");
+                                } else {
+                                    write("Please answer with yes or no.");
+                                    return false;
+                                }
+                                return true;
+                            });
+
                             return () => {
-                                ask(() => {
-                                    write([
-                                        "Are you certain to buy one " + offer.item + " for " + price + "?",
-                                        "Are you sure you are willing to pay " + price + " for one " + offer.item + "?",
-                                    ]);
-                                },
-                                (answer) => {
-                                    const answerInfo = decode(answer);
-                                    if(answerInfo.answer == "yes"){
-                                        write("You decide to buy one " + offer.item + " for " + price + ".");
-                                        state.inventory[offer.invName]++;
-                                        offer.stock--;
-                                        state.inventory.coins -= offer.price;
-                                    } else if(answerInfo.answer == "no") {
-                                        write("You decide not to buy anything.");
-                                    } else {
-                                        write("Please answer with yes or no.");
-                                        return false;
-                                    }
-                                    return true;
-                                });
+                                write([
+                                    "Are you certain to buy one " + offer.item + " for " + price + "?",
+                                    "Are you sure you are willing to pay " + price + " for one " + offer.item + "?",
+                                ]);
                             }
 
 
@@ -484,14 +550,7 @@ const situations = [
 
 // This defines what happens at the start of the game
 function init(){
-    ask(() => {
-            write([
-                "Please tell me your name.", 
-                "Hey. What's your name?",
-                "Hello. Please tell me what you want to be called.",
-                "Hey. Tell me your name, please.",
-            ]); 
-        }, (name) => {
+    ask((name) => {
             name = name.charAt(0).toUpperCase() + name.slice(1);
             state.userName = name;
 
@@ -516,15 +575,22 @@ function init(){
         }
     );
 
+    write([
+        "Please tell me your name.", 
+        "Hey. What's your name?",
+        "Hello. Please tell me what you want to be called.",
+        "Hey. Tell me your name, please.",
+    ]); 
+
 }
 
 // Helper function to download save-file
 function download(filename, text) {
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    element.setAttribute('download', filename);
+    var element = document.createElement("a");
+    element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
+    element.setAttribute("download", filename);
   
-    element.style.display = 'none';
+    element.style.display = "none";
     document.body.appendChild(element);
   
     element.click();
@@ -559,7 +625,7 @@ window.addEventListener("drop", (e) => {
                 state.situation_order[state.position % state.situation_order.length] % situations.length];
         
             // Remove any askCallback
-            ask(null, null);
+            ask(null);
 
             autoscroll();
         });

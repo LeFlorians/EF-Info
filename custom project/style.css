@@ -9,12 +9,18 @@
 }
 
 body {
-    background: rgb(32, 31, 33);
+    background-color: rgb(32, 31, 33);
     width: 100vw;
     height: 100vh;
     margin: 0;
     cursor: default;
 
+}
+
+.locked p {
+    width: 50%;
+    text-align: center;
+    align-self: center;
 }
 
 #container {
@@ -115,4 +121,3 @@ body {
 
     font-size: 20px;
 }
-

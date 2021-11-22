@@ -8,7 +8,7 @@ const ignored_words = [
     "the", "of", "on", "with", "that",
 ];
 const ignored_symbols = [
-    ".", ",", "?", "!",
+    ".", ",", "?", "!", ";", ":",
 ];
 
 // Step 2: map words to aliases
@@ -28,6 +28,7 @@ const aliases = {
         "continue": ["continue", "resume"],
         "give": ["give"],
         "clean": ["clean"], // TODO: make cleaning book available
+        "repeat": ["repeat"],
     },
 
     object: {
@@ -41,13 +42,19 @@ const aliases = {
     },
 
     direction: {
-        "impossible": ["west", "south", "east", "north", "backwards", "backward", "left", "right", "back"],
+        "other": ["west", "south", "east", "north",  "left", "right", "up", "down"],
+        "back": ["backwards", "backward", "back"],
     },
     
     answer: {
         "yes": ["yes", "yep", "yeah", "sure", "y", "indeed"],
         "no": ["no", "nope", "nah", "n"],
     },
+
+    // More specific aliases
+    bookAlias: {
+        "changePage": ["go", "change", "switch"],
+    }
 
 };
 
@@ -68,7 +75,9 @@ function decode(command){
     });
 
     // info will be filled with aliases from list
-    var info = {};
+    var info = {
+        numbers: [],
+    };
 
     // map words to aliases and put into map
     words.forEach(word => {
@@ -77,6 +86,9 @@ function decode(command){
             for(var j in aliases[i])
                 if(aliases[i][j].includes(word.toLowerCase()))
                     info[i] = j;
+        
+        if(!isNaN(word))
+            info.numbers.push(+word);
 
     });
 

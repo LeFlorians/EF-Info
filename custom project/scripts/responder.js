@@ -32,13 +32,9 @@ function show(url){
         callback: function with one parameter (answer given), executed when answered, returns true if callback should be removed
 */
 var askCallback;
-function ask(question, callback){
+function ask(callback){
     // define callback
     askCallback = callback;
-
-    // ask question
-    if(question != null)
-        question();
 }
 
 
@@ -132,8 +128,15 @@ function autoscroll() {
     }, 100);
 }
 
-// Ask actor to start the game
-init();
+// Ask actor to start the game (when page was clicked)
+const startEventListener = (e) => {
+    window.removeEventListener("click", startEventListener);
+    outputBox.classList.remove("locked");
+    outputBox.innerHTML = "";
+    
+    init();
+}
+window.addEventListener("click", startEventListener);
 
 // Export the 3 methods to provide user interaction for actor.js
 export {write, show, ask, autoscroll};
