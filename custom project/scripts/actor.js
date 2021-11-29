@@ -50,6 +50,8 @@ function respond(info){
                 - Write very simple sentences<br>
                 - Don't be afraid to try out things<br>
                 - Repeat commands with 'repeat'<br>
+                - Save game with 'save'<br>
+                - Load game by dragging safefile into chat<br>
                 <br>
                 What you can't do:<br>
                 - Negate sentences (don't)<br>
@@ -185,6 +187,43 @@ function respond(info){
         }
     }
     
+    // Global clean command
+    if(info.verb == "clean"){
+        if(info.object == "book" && state.inventory.notebooks >= 1){
+            if(!state.bookClean){
+                state.bookClean = true;
+                return () => {
+                    write([
+                        "You wipe the dust of your notebook.",
+                        "You clean your notebook.",
+                    ]);
+                };
+            }   
+            return () => {
+                write([
+                    "Your book has already been wiped clean.",
+                    "Your notebook has already been cleaned.",
+                ]);
+            }
+        }
+    }
+
+    // Global flip command
+    if(info.verb == "flip"){
+        if(info.object == "coin" && state.inventory.coins >= 1){
+            return () => {
+                write([
+                    "You flip a coin. Heads.",
+                    "You flip a coin. Tails.",
+                ]);
+            }
+        }
+        return () => {
+            write("You cannot flip that."); 
+        }
+    }
+
+
     // Global look command
     if(info.verb == "look") {
         if(info.object == "bag"){
@@ -329,10 +368,12 @@ function respond(info){
 
 };
 
-// State of the game used for saves
+// State of the game (used for saves)
 var state = {
     coinAvailable: true,
+
     bookAvailable: true,
+    bookClean: false,
     bookPage: -1,
     bookText: [],
 
@@ -555,10 +596,16 @@ function init(){
             name = name.charAt(0).toUpperCase() + name.slice(1);
             state.userName = name;
 
-            // TODO: shuffle situations
             state.situation_order = [];
+            
+            // TODO: Seed random by username
+            var add = Math.floor(Math.random() * 5 + 1) * 2;
+            if(situations.length%2==0){
+                add += 1;
+            }
+
             for(var i = 0; i < situations.length; i++){
-                state.situation_order.push(i);
+                state.situation_order.push((i * add) % situations.length);
             }
 
             write([

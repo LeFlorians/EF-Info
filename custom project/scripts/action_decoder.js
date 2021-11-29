@@ -19,7 +19,7 @@ const aliases = {
         "take": ["pick", "take", "steal", "keep"],
         "put": ["put", "place"],
         "write": ["write"],
-        "erase": ["delete", "erase"], // TODO: implement page switching
+        "erase": ["delete", "erase"],
         "read": ["read"],
         "buy": ["purchase", "buy", "trade"],
         "save": ["save"],
@@ -27,7 +27,8 @@ const aliases = {
         "load": ["load"],
         "continue": ["continue", "resume"],
         "give": ["give"],
-        "clean": ["clean"], // TODO: make cleaning book available
+        "clean": ["clean", "wipe"],
+        "flip": ["flip"],
         "repeat": ["repeat"],
         "turn": ["turn", "rotate"],
     },
@@ -83,11 +84,14 @@ function decode(command){
     // map words to aliases and put into map
     words.forEach(word => {
         // TODO: This could be improved with hash-map like datastructure
-        for(var i in aliases)
+        for(var i in aliases){
             for(var j in aliases[i])
-                if(aliases[i][j].includes(word.toLowerCase()))
+                if(aliases[i][j].includes(word.toLowerCase())
+                || (i == "verb" && word.endsWith("ing") && 
+                aliases[i][j].includes(word.substring(0, word.length-3))))
                     info[i] = j;
-        
+        }
+
         if(!isNaN(word))
             info.numbers.push(+word);
 
