@@ -599,13 +599,8 @@ function init(){
             state.situation_order = [];
             
             // TODO: Seed random by username
-            var add = Math.floor(Math.random() * 5 + 1) * 2;
-            if(situations.length%2==0){
-                add += 1;
-            }
-
             for(var i = 0; i < situations.length; i++){
-                state.situation_order.push((i * add) % situations.length);
+                state.situation_order.push(i);
             }
 
             write([
